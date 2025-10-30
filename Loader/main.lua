@@ -49,18 +49,16 @@ gui.Name = "WataXLoader"
 gui.ResetOnSpawn = false
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 320, 0, 200)
-frame.Position = UDim2.new(0.5, -160, 0.5, -100)
+frame.Size = UDim2.new(0, 360, 0, 220)
+frame.Position = UDim2.new(0.5, -180, 0.5, -110)
 frame.BackgroundColor3 = Color3.fromRGB(35,35,35)
 frame.BorderSizePixel = 0
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0,12)
 Instance.new("UIStroke", frame).Color = Color3.fromRGB(255,255,255)
+frame.BackgroundTransparency = 1 -- awalnya transparan
 
--- Frame animation: fade in
-frame.BackgroundTransparency = 1
-local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-local tween = TweenService:Create(frame, tweenInfo, {BackgroundTransparency=0})
-tween:Play()
+-- Animasi fade-in frame
+TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency=0}):Play()
 
 -- Close Button
 local closeBtn = Instance.new("TextButton", frame)
@@ -76,21 +74,32 @@ closeBtn.MouseButton1Click:Connect(function() gui:Destroy() end)
 
 -- Avatar Image
 local avatar = Instance.new("ImageLabel", frame)
-avatar.Size = UDim2.new(0, 50, 0, 50)
+avatar.Size = UDim2.new(0, 70, 0, 70)
 avatar.Position = UDim2.new(0,20,0,45)
 avatar.BackgroundTransparency = 1
-avatar.Image = "rbxassetid://112840507" -- default avatar
+avatar.Image = "rbxassetid://112840507" -- default
+
+-- Avatar fade-in animation
+avatar.ImageTransparency = 1
 task.spawn(function()
-    local ok,img = pcall(function()
-        return Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100)
-    end)
-    if ok then avatar.Image = img end
+    local success, img
+    repeat
+        success, img = pcall(function()
+            return Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100)
+        end)
+        if success and img then
+            avatar.Image = img
+        else
+            task.wait(0.5)
+        end
+    until success and img
+    TweenService:Create(avatar, TweenInfo.new(0.5), {ImageTransparency=0}):Play()
 end)
 
--- Username label next to avatar
+-- Username label
 local unameLabel = Instance.new("TextLabel", frame)
-unameLabel.Position = UDim2.new(0, 80, 0, 50)
-unameLabel.Size = UDim2.new(1, -100, 0, 30)
+unameLabel.Position = UDim2.new(0, 100, 0, 55)
+unameLabel.Size = UDim2.new(1, -120, 0, 30)
 unameLabel.BackgroundTransparency = 1
 unameLabel.Font = Enum.Font.GothamBold
 unameLabel.TextSize = 20
@@ -100,7 +109,7 @@ unameLabel.Text = player.Name
 
 -- Status
 local status = Instance.new("TextLabel", frame)
-status.Position = UDim2.new(0,20,0,120)
+status.Position = UDim2.new(0,20,0,135)
 status.Size = UDim2.new(1,-40,0,24)
 status.BackgroundTransparency = 1
 status.Font = Enum.Font.Gotham
@@ -111,7 +120,7 @@ status.Text = "Klik tombol verifikasi untuk lanjut..."
 -- Button Row
 local btnRow = Instance.new("Frame", frame)
 btnRow.Size = UDim2.new(0.86,0,0,36)
-btnRow.Position = UDim2.new(0.07,0,1,-44)
+btnRow.Position = UDim2.new(0.07,0,1,-50)
 btnRow.BackgroundTransparency = 1
 
 -- TikTok Button
@@ -136,7 +145,7 @@ discordBtn.TextColor3 = Color3.fromRGB(255,255,255)
 discordBtn.BackgroundColor3 = Color3.fromRGB(88,101,242)
 Instance.new("UICorner", discordBtn).CornerRadius = UDim.new(0,8)
 
--- Clipboard function
+-- Clipboard
 local function copyToClipboard(link)
     if setclipboard then
         pcall(setclipboard, link)
@@ -172,7 +181,7 @@ verifyBtn.TextColor3 = Color3.fromRGB(255,255,255)
 verifyBtn.BackgroundColor3 = Color3.fromRGB(60,180,100)
 Instance.new("UICorner", verifyBtn).CornerRadius = UDim.new(0,8)
 
--- Glow RGB
+-- Glow RGB animasi
 local glow = Instance.new("UIStroke", verifyBtn)
 glow.Thickness = 2
 task.spawn(function()
