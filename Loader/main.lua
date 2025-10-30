@@ -25,32 +25,22 @@ local function isVerified(uname)
     local sat = fetch(urlSatuan)
     if not vip or not sat then return false end
     uname = uname:lower()
-
     local function checkList(list)
         for line in list:gmatch("[^\r\n]+") do
             local nameOnly = line:match("^(.-)%s*%-%-") or line
             nameOnly = nameOnly:match("^%s*(.-)%s*$")
-            if nameOnly:lower() == uname then
-                return true
-            end
+            if nameOnly:lower() == uname then return true end
         end
         return false
     end
-
     return checkList(vip) or checkList(sat)
 end
 
 local function notify(title, text, duration)
     local ok = pcall(function()
-        StarterGui:SetCore("SendNotification", {
-            Title = title or "Info",
-            Text = text or "",
-            Duration = duration or 4
-        })
+        StarterGui:SetCore("SendNotification", {Title=title or "Info", Text=text or "", Duration=duration or 4})
     end)
-    if not ok then
-        print(("[%s] %s"):format(title or "Info", text or ""))
-    end
+    if not ok then print(("[%s] %s"):format(title or "Info", text or "")) end
 end
 
 -- GUI
@@ -61,39 +51,46 @@ gui.ResetOnSpawn = false
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0, 320, 0, 200)
 frame.Position = UDim2.new(0.5, -160, 0.5, -100)
-frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+frame.BackgroundColor3 = Color3.fromRGB(35,35,35)
 frame.BorderSizePixel = 0
-Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0,12)
 Instance.new("UIStroke", frame).Color = Color3.fromRGB(255,255,255)
+
+-- Frame animation: fade in
+frame.BackgroundTransparency = 1
+local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+local tween = TweenService:Create(frame, tweenInfo, {BackgroundTransparency=0})
+tween:Play()
 
 -- Close Button
 local closeBtn = Instance.new("TextButton", frame)
 closeBtn.Size = UDim2.new(0, 30, 0, 30)
 closeBtn.Position = UDim2.new(1, -35, 0, 5)
-closeBtn.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+closeBtn.BackgroundColor3 = Color3.fromRGB(200,60,60)
 closeBtn.Text = "X"
 closeBtn.TextColor3 = Color3.fromRGB(255,255,255)
 closeBtn.Font = Enum.Font.GothamBold
 closeBtn.TextSize = 18
-Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 8)
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0,8)
 closeBtn.MouseButton1Click:Connect(function() gui:Destroy() end)
 
--- Avatar
+-- Avatar Image
 local avatar = Instance.new("ImageLabel", frame)
-avatar.Size = UDim2.new(0, 64, 0, 64)
-avatar.Position = UDim2.new(0, 20, 0, 40)
+avatar.Size = UDim2.new(0, 50, 0, 50)
+avatar.Position = UDim2.new(0,20,0,45)
 avatar.BackgroundTransparency = 1
+avatar.Image = "rbxassetid://112840507" -- default avatar
 task.spawn(function()
     local ok,img = pcall(function()
         return Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100)
     end)
-    avatar.Image = (ok and img) or "rbxassetid://112840507"
+    if ok then avatar.Image = img end
 end)
 
--- Username
+-- Username label next to avatar
 local unameLabel = Instance.new("TextLabel", frame)
-unameLabel.Position = UDim2.new(0, 100, 0, 55)
-unameLabel.Size = UDim2.new(1, -120, 0, 30)
+unameLabel.Position = UDim2.new(0, 80, 0, 50)
+unameLabel.Size = UDim2.new(1, -100, 0, 30)
 unameLabel.BackgroundTransparency = 1
 unameLabel.Font = Enum.Font.GothamBold
 unameLabel.TextSize = 20
@@ -103,8 +100,8 @@ unameLabel.Text = player.Name
 
 -- Status
 local status = Instance.new("TextLabel", frame)
-status.Position = UDim2.new(0, 20, 0, 120)
-status.Size = UDim2.new(1, -40, 0, 24)
+status.Position = UDim2.new(0,20,0,120)
+status.Size = UDim2.new(1,-40,0,24)
 status.BackgroundTransparency = 1
 status.Font = Enum.Font.Gotham
 status.TextSize = 14
@@ -113,14 +110,14 @@ status.Text = "Klik tombol verifikasi untuk lanjut..."
 
 -- Button Row
 local btnRow = Instance.new("Frame", frame)
-btnRow.Size = UDim2.new(0.86, 0, 0, 36)
-btnRow.Position = UDim2.new(0.07, 0, 1, -44)
+btnRow.Size = UDim2.new(0.86,0,0,36)
+btnRow.Position = UDim2.new(0.07,0,1,-44)
 btnRow.BackgroundTransparency = 1
 
 -- TikTok Button
 local tiktokBtn = Instance.new("TextButton", btnRow)
-tiktokBtn.Size = UDim2.new(0.18, 0, 1, 0)
-tiktokBtn.Position = UDim2.new(0, 0, 0, 0)
+tiktokBtn.Size = UDim2.new(0.18,0,1,0)
+tiktokBtn.Position = UDim2.new(0,0,0,0)
 tiktokBtn.Text = "TikTok"
 tiktokBtn.Font = Enum.Font.GothamBold
 tiktokBtn.TextSize = 14
@@ -154,20 +151,20 @@ end
 
 tiktokBtn.MouseButton1Click:Connect(function()
     local ok = copyToClipboard(TIKTOK_LINK)
-    status.Text = ok and "✅ Link TikTok disalin!" or "⚠️ Salin TikTok gagal, cek console."
+    status.Text = ok and "✅ Link TikTok disalin!" or "⚠️ Salin TikTok gagal"
     task.delay(2,function() if status and status.Parent then status.Text = "Klik tombol verifikasi untuk lanjut..." end end)
 end)
 
 discordBtn.MouseButton1Click:Connect(function()
     local ok = copyToClipboard(DISCORD_LINK)
-    status.Text = ok and "✅ Link Discord disalin!" or "⚠️ Salin Discord gagal, cek console."
+    status.Text = ok and "✅ Link Discord disalin!" or "⚠️ Salin Discord gagal"
     task.delay(2,function() if status and status.Parent then status.Text = "Klik tombol verifikasi untuk lanjut..." end end)
 end)
 
 -- Verifikasi Script Button
 local verifyBtn = Instance.new("TextButton", btnRow)
-verifyBtn.Size = UDim2.new(0.56, 0, 1, 0)
-verifyBtn.Position = UDim2.new(0.22, 0, 0, 0)
+verifyBtn.Size = UDim2.new(0.56,0,1,0)
+verifyBtn.Position = UDim2.new(0.22,0,0,0)
 verifyBtn.Text = "Verifikasi Script"
 verifyBtn.Font = Enum.Font.GothamBold
 verifyBtn.TextSize = 16
@@ -190,7 +187,7 @@ end)
 -- Getar saat klik
 local function shakeButton(button)
     local originalPos = button.Position
-    local tweenInfo = TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 4, true)
+    local tweenInfo = TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut,4,true)
     local tween = TweenService:Create(button, tweenInfo, {Position = originalPos + UDim2.new(0,5,0,0)})
     tween:Play()
 end
