@@ -55,9 +55,8 @@ frame.BackgroundColor3 = Color3.fromRGB(35,35,35)
 frame.BorderSizePixel = 0
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0,12)
 Instance.new("UIStroke", frame).Color = Color3.fromRGB(255,255,255)
-frame.BackgroundTransparency = 1 -- awalnya transparan
+frame.BackgroundTransparency = 1 -- fade-in
 
--- Animasi fade-in frame
 TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency=0}):Play()
 
 -- Close Button
@@ -72,31 +71,31 @@ closeBtn.TextSize = 18
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0,8)
 closeBtn.MouseButton1Click:Connect(function() gui:Destroy() end)
 
--- Avatar Image
+-- Avatar
 local avatar = Instance.new("ImageLabel", frame)
 avatar.Size = UDim2.new(0, 70, 0, 70)
-avatar.Position = UDim2.new(0,20,0,45)
+avatar.Position = UDim2.new(0, 20, 0, 45)
 avatar.BackgroundTransparency = 1
 avatar.Image = "rbxassetid://112840507" -- default
-
--- Avatar fade-in animation
 avatar.ImageTransparency = 1
+
+-- Ambil thumbnail dengan retry sampai berhasil
 task.spawn(function()
     local success, img
     repeat
         success, img = pcall(function()
             return Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100)
         end)
-        if success and img then
+        if success and img and img ~= "" then
             avatar.Image = img
+            TweenService:Create(avatar, TweenInfo.new(0.5), {ImageTransparency=0}):Play()
         else
             task.wait(0.5)
         end
-    until success and img
-    TweenService:Create(avatar, TweenInfo.new(0.5), {ImageTransparency=0}):Play()
+    until success and img and img ~= ""
 end)
 
--- Username label
+-- Username
 local unameLabel = Instance.new("TextLabel", frame)
 unameLabel.Position = UDim2.new(0, 100, 0, 55)
 unameLabel.Size = UDim2.new(1, -120, 0, 30)
@@ -117,7 +116,7 @@ status.TextSize = 14
 status.TextColor3 = Color3.fromRGB(255,255,255)
 status.Text = "Klik tombol verifikasi untuk lanjut..."
 
--- Button Row
+-- Buttons
 local btnRow = Instance.new("Frame", frame)
 btnRow.Size = UDim2.new(0.86,0,0,36)
 btnRow.Position = UDim2.new(0.07,0,1,-50)
